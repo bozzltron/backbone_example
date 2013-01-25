@@ -1,54 +1,97 @@
-var Ration = Backbone.Model.extend({
+(function($){
 
-});
+  var Ration = Backbone.Model.extend({
+    // This is where backbone will persist a model change to the server, i.e. /rations/{id}
+    //urlRoot : '/rations'
+  });
 
-var Rations = Backbone.Collection.extend({
-  model:Ration,
-  localStorage: new Backbone.LocalStorage("Rations")
-});
+  var Rations = Backbone.Collection.extend({
+    // This is where backbone will fetch data, i.e. get request to rations
+    //url: '/rations'
+    model:Ration,
+    localStorage: new Backbone.LocalStorage("Rations")
+  });
 
-var rations = new Rations();
+  var rations = new Rations();
 
-var FormView = Backbone.View.extend({
+  var FormView = Backbone.View.extend({
 
-  template: $("form:first"),
+    events: {
+      "click #ration":          "addFields",
+      "click #submit":          "save",
+      "submit #ration_form":    "noop"
+    },
 
-  events: {
-    "click #ration":          "addFields",
-  },
+    initialize: function() {
+      _.bindAll(this);
+      console.log('init');
+      this.index = 1;
+      this.collection = rations;
+    },
 
-  initialize: function() {
-    this.index = 1;
-    //this.listenTo(this.model, "change", this.render);
-  },
+    noop : function(e){
+      e.preventDefault();
+      return false;
+    },
 
-  render: function() {
-    
-  },
+    render: function() {
+      return this;
+    },
 
-  addFields:function(){
-    $('#ration').after('<div><input class="item" name="item' + this.index +'" type="text" /><input class="qty" name="qty' + this.index +'" type="text" /></div>');
-    
-    return false;
-  }
+    addFields:function(){
+      console.log('here');
+      $('#ration').after('<div><input placeholder="item" class="item" name="item' + this.index + '" type="text" />' +
+        '<input placeholder="Quantity" class="qty" name="qty' + this.index +'" type="text" /></div>');
+      $('#submit').show();
+      
+      this.index = 1;
+      return false;
+    },
 
-});
+    save:function(){
+      var ration = {
+        name : $("#ration_name").val(),
+        inventory : []
+      };
 
-var RationView = Backbone.View.extend({
+      var items = [];
+      $('.item').each(function(i, el){
+        items.push($(el).val());
+      });
 
-  template: $("form:first"),
+      var qtys = [];
+      $('.qty').each(function(i, el){
+        qtys.push($(el).val());
+      });  
 
-  events: {
-   
-  },
+      $.each(items, function(i, el){
+        ration.inventory.push({
+          item:items[i],
+          qty:qtys[i]
+        });
+      });    
 
-  initialize: function() {
-    this.collection = rations;
-    this.listenTo(this.collection, "change", this.render);
-  }
+      console.log(ration);
 
-  render: function() {
-  
-  }
+      // Create triggers presistance to the server based on urlRoot in the model
+      this.collection.create(ration);
+      return false;
+    }
 
-});
+  });
+
+  var RationView = Backbone.View.extend({
+
+
+
+  });
+
+  $(document).ready(function(){
+    console.log('ready');
+
+    // passing DOM elements into the views allows for reuse
+    new FormView({el:$('#ration_form')});
+    new RationView({el:$('#rations')})
+  });
+
+}(jQuery));
