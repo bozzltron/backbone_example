@@ -1,4 +1,4 @@
-(function($){
+(function ($) {
 
   var Ration = Backbone.Model.extend({
     // This is where backbone will persist a model change to the server, i.e. /rations/{id}
@@ -7,9 +7,9 @@
 
   var Rations = Backbone.Collection.extend({
     // This is where backbone will fetch data, i.e. get request to rations
-    //url: '/rations'
+    url: '/rations',
     model:Ration,
-    localStorage: new Backbone.LocalStorage("Rations")
+    //localStorage: new Backbone.LocalStorage("Rations")
   });
 
   var rations = new Rations();
@@ -74,7 +74,7 @@
       console.log(ration);
 
       // Create triggers presistance to the server based on urlRoot in the model
-      this.collection.create(ration);
+      this.collection.create(new Ration(ration));
       return false;
     }
 
@@ -82,8 +82,20 @@
 
   var RationView = Backbone.View.extend({
 
-
-
+    initialize: function() {
+      _.bindAll(this);
+      console.log('init rations');
+      this.collection = rations;
+      this.listenTo(this.collection, "change", this.render);
+      this.template = _.template($("#ration-template").html());
+    },
+      
+    render: function() {
+      var html = this.template(this.collection.toArray());
+      this.$el.html(html);
+      return this;
+    }
+      
   });
 
   $(document).ready(function(){
