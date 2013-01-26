@@ -25,7 +25,14 @@
 </table>
 
 <script id="ration-template" type="text/underscore-template">
-	<table class-"table table-stripped"></table>
+	<table class="table table-stripped">
+		<thead>
+			<td>Item</td><td>Quantitiy</td>
+		</thead>
+        <tbody>
+            <% _.each(rations, function(ration) { %> <tr><td><%= ration.get('name') %></td></tr> <% }); %>
+        </tbody>
+	</table>
 </script>
 
 </body>

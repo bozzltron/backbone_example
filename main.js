@@ -7,12 +7,12 @@
 
   var Rations = Backbone.Collection.extend({
     // This is where backbone will fetch data, i.e. get request to rations
-    url: '/rations',
+    url: '/rations.json',
     model:Ration,
     //localStorage: new Backbone.LocalStorage("Rations")
   });
 
-  var rations = new Rations();
+  window.rations = new Rations();
 
   var FormView = Backbone.View.extend({
 
@@ -24,9 +24,9 @@
 
     initialize: function() {
       _.bindAll(this);
-      console.log('init');
+      console.log('init form');
       this.index = 1;
-      this.collection = rations;
+      this.collection = window.rations;
     },
 
     noop : function(e){
@@ -75,6 +75,7 @@
 
       // Create triggers presistance to the server based on urlRoot in the model
       this.collection.create(new Ration(ration));
+        
       return false;
     }
 
@@ -86,12 +87,14 @@
       _.bindAll(this);
       console.log('init rations');
       this.collection = rations;
-      this.listenTo(this.collection, "change", this.render);
+      this.listenTo(window.rations, "add", this.render);
       this.template = _.template($("#ration-template").html());
     },
       
     render: function() {
-      var html = this.template(this.collection.toArray());
+      console.log('render');
+      var self = this;
+      var html = this.template({rations:self.collection.toArray()});
       this.$el.html(html);
       return this;
     }
