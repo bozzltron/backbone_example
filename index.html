@@ -11,26 +11,33 @@
 <body>
 
 <div class="well">
-<form id="ration_form" class="form">
-	<input id="ration_name" type="text" placeholder="Name" />
-	<a id="ration" class="btn btn-primary" href="#">+ Ration</a>
-	<a style="display:none" id="submit" class="btn">Save</a>
-</form>
+	<div id="form-wrapper"></div>
 </div>
 <h3>Rations</h3>
-<table id="rations" class-"table table-stripped">
+<table id="rations" class="table table-striped">
 	<thead>
 		<td>Item</td><td>Quantity</td>
 	</thead>
 </table>
 
 <script id="ration-template" type="text/underscore-template">
-	<table class="table table-stripped">
+	<table class="table table-striped">
 		<thead>
-			<td>Item</td><td>Quantitiy</td>
+			<td>Item</td><td>Description</td>
 		</thead>
         <tbody>
-            <% _.each(rations, function(ration) { %> <tr><td><%= ration.get('name') %></td></tr> <% }); %>
+            <% _.each(rations, function(ration) { %> 
+            	<tr>
+            		<td>
+	            		<%= ration.get('name') %>
+            		</td>
+            		<td>
+	            		<% _.each(ration.get('inventory'), function(item) { %>
+	            			<%= item.qty %> - <%= item.item %>
+	            		<% }); %>
+            		</td>
+          		</tr> 
+    		<% }); %>
         </tbody>
 	</table>
 </script>

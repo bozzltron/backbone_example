@@ -22,11 +22,20 @@
       "submit #ration_form":    "noop"
     },
 
+    template: ''+
+    '<form id="ration_form" class="form">' +
+    '<input id="ration_name" type="text" placeholder="Name" />' +
+    '<a id="ration" class="btn btn-primary" href="#">+ Ration</a>' +
+    '<a style="display:none" id="submit" class="btn">Save</a>' +
+    '</form>',
+
     initialize: function() {
-      _.bindAll(this);
+      _.bindAll(this, 'render');
       console.log('init form');
       this.index = 1;
       this.collection = window.rations;
+      this.listenTo(window.rations, "add", this.render);
+      this.render();
     },
 
     noop : function(e){
@@ -35,6 +44,7 @@
     },
 
     render: function() {
+      this.$el.html(this.template);
       return this;
     },
 
@@ -105,7 +115,7 @@
     console.log('ready');
 
     // passing DOM elements into the views allows for reuse
-    new FormView({el:$('#ration_form')});
+    new FormView({el:$('#form-wrapper')});
     new RationView({el:$('#rations')})
   });
 
